@@ -1,19 +1,17 @@
 <?php
-
+// sample for learning ReactPHP
 use React\EventLoop\Factory;
 use React\EventLoop\Loop;
-use React\Promise\Deferred;
-use React\Promise\Promise;
-use React\Http\Server;
+use React\Http\HttpServer;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
-use React\Socket\Server as SocketServer;
+use React\Socket\SocketServer;
 
 require __DIR__.'/vendor/autoload.php';
 
-$loop = Factory::create();
+$loop = Loop::get();
 
-$server = new Server($loop,
+$server = new HttpServer($loop,
 function (ServerRequestInterface $request) {
     $stream = new \React\Stream\ThroughStream();
 
@@ -59,8 +57,8 @@ function (ServerRequestInterface $request) {
 
 });
 
-$socket = new SocketServer('192.168.1.154:9010',$loop);
+$socket = new SocketServer('0.0.0.0:9010');
 $server->listen($socket);
 echo 'Working on ' . str_replace('tcp:','http:',$socket->getAddress())."\n";
 
-$loop->run();
+// $loop->run();
