@@ -15,72 +15,48 @@ require __DIR__.'/vendor/autoload.php';
 
 
 # You can generate a Token from the "Tokens Tab" in the UI
-$token = 'td2TbFlFgaPe20IWHoA5oYo0ezWhdtQIOwh2suxFL7ulrVyWGkuqFC64tPZRiDJs1C8Gos7SBUEUmOZffcXBmQ==';
-$org = 'myorg';
-$bucket = 'mybucket';
+// $token = 'td2TbFlFgaPe20IWHoA5oYo0ezWhdtQIOwh2suxFL7ulrVyWGkuqFC64tPZRiDJs1C8Gos7SBUEUmOZffcXBmQ==';
+// $org = 'myorg';
+// $bucket = 'mybucket';
 
-$client = new Client([
-    "url" => "http://195.201.120.5:8086",
-    "token" => $token,
-]);
+// $client = new Client([
+//     "url" => "http://195.201.120.5:8086",
+//     "token" => $token,
+// ]);
 
-var_dump($client);
+// $response = curl_exec($curl);
 
+// var_dump($client);
 
+for ($i=1;$i<10;$i++)
+{
+    $time1 = time();
 
-$loop = Loop::get();
+    $date1 = date("Y-m-d H:i:s");
+    sleep(2);
+    echo "times - ".$i;
 
-$server = new HttpServer($loop,
-function (ServerRequestInterface $request) {
-    $stream = new \React\Stream\ThroughStream();
+    for ($c=1;$c<1;$c++) {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'http://195.201.120.5:8086/api/v2/write?org=myorg&bucket=mybucket5&precision=s',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'log,name=text value="Text message '.$c.' from '.$date1.'" '.$time1-$i,
+        CURLOPT_HTTPHEADER => array(
+          'Authorization: Token td2TbFlFgaPe20IWHoA5oYo0ezWhdtQIOwh2suxFL7ulrVyWGkuqFC64tPZRiDJs1C8Gos7SBUEUmOZffcXBmQ==',
+          'Content-Type: application/json'
+        ),
+      ));
 
-    $size = $request->getBody()->getSize();
-    $params = $request->getQueryParams();
-    $name =$params['name'];
+        $response = curl_exec($curl);
 
-    Loop::addTimer(0.0, function () use ($stream, $name, $size) {
-        $stream->write(json_encode(['Name:'=>$name,
-            'Size:'=>$size]));
-    });
+        curl_close($curl);
+    }
 
-    $timer = Loop::addPeriodicTimer(0.5,function () use ($stream) {
-        $stream->write(json_encode(['time' => microtime(true)]));
-        $stream->write('HALO!'.PHP_EOL);
-
-    });
-
-    $timer2 = Loop::addPeriodicTimer(0.7, function () use ($stream) {
-        $stream->write(json_encode(['tick'=>0.7]));
-    });
-
-    Loop::addTimer(5, function () use ($timer, $timer2, $stream) {
-        Loop::cancelTimer($timer);
-        Loop::cancelTimer($timer2);
-        $stream->end();
-    });
-
-    return new Response(
-        200,
-        ['Content-Type' => 'application/json'],
-        $stream
-    );
-
-
-
-//    $size = $request->getBody()->getSize();
-//    return new Response(
-//        200,
-//        ['Content-Type' => 'application/json'],
-//        json_encode(['message'=>"TEST MESSAGE(size is $size ) FROM SIMPLEST SERVER"])
-//    );
-
-});
-
-$socket = new SocketServer('0.0.0.0:9010');
-$server->listen($socket);
-echo 'Working on ' . str_replace('tcp:','http:',$socket->getAddress())."\n";
-
-
-
-
-
+}
