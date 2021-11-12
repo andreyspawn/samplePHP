@@ -1,6 +1,6 @@
 <?php
 
-require '../vendor/autoload.php';
+require './vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -31,7 +31,8 @@ $channel->queue_declare(
     false,
     false
 );
-$time1 = time();
+$time1 = microtime(true);
+var_dump($time1);
 for ($i=0; $i <10000; $i++)
 {
 $msg = new AMQPMessage('Hello world!!! Number:'.$i);
@@ -39,14 +40,16 @@ $msg = new AMQPMessage('Hello world!!! Number:'.$i);
 
 $channel->basic_publish($msg,'','task_queue');
 }
-$time2 = time();
+$time2 = microtime(true);
+var_dump($time2);
 $timedelta = $time2-$time1;
+var_dump($timedelta);
 
 echo date('d-m-Y H:i:s',$time1).'---'.date('d-m-Y H:i:s',$time2);
 echo "\n Time in mks: ".$timedelta;
 
 $finalMsg = date('d-m-Y H:i:s',$time1).'---'.date('d-m-Y H:i:s',$time2).
-    "\n Time in mks: ".$timedelta;
+    "\n Time in mks: ".$timedelta.PHP_EOL;
 
 $msg = new AMQPMessage($finalMsg);
 $channel->basic_publish($msg,'','task_queue');
