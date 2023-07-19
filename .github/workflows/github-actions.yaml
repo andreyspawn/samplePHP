@@ -34,3 +34,6 @@ jobs:
         with:
           key: ${{ secrets.DEPLOY_PEM_KEY }}
           known_hosts: ${{ env.KNOWN_HOSTS }}
+
+      - name: Test SSH
+        run: ssh andrey.mokriy@secrets.SSH_HOST
