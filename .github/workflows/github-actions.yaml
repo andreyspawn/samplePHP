@@ -1,4 +1,4 @@
-name: CI
+name: CI test 1
 
 env:
   PROJECT_PATH: "/var/www/samplePHP"
