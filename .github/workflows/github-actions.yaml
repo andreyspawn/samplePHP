@@ -36,4 +36,4 @@ jobs:
           known_hosts: ${{ env.KNOWN_HOSTS }}
 
       - name: Test SSH
-        run: ssh andrey.mokriy81@${{ secrets.SSH_HOST }}
+        run: ssh andrey.spawn@${{ secrets.SSH_HOST }}
