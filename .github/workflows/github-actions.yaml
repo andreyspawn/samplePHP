@@ -1,0 +1,36 @@
+name: CI
+
+env:
+  PROJECT_PATH: "/var/www/samplePHP"
+  ENV: "development"
+run-name: ${{ github.actor }} start CI ${{github.ref}}
+on:
+  push:
+    branches:
+    - "main"
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JSON_VERSION: b.${{github.run_number}}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Define TEST main DEPLOYMENT ENVIRONMENT
+        if: ${{github.ref == 'refs/heads/main'}}
+        run: |
+          echo "GITHUB_COMMIT=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+          echo "BUILD=b.${{ github.run_number }}" >> $GITHUB_ENV
+          echo "BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
+          echo "ENV=staging" >> $GITHUB_ENV
+          echo "KNOWN_HOSTS=$(ssh-keyscan -p ${{ secrets.SSH_HOST_PORT}} -H ${{ secrets.SSH_HOST }})" >> $GITHUB_ENV
+          echo "PROJECT_PATH=/var/www/filiciti" >> $GITHUB_ENV
+
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_PEM_KEY }}
+          known_hosts: ${{ env.KNOWN_HOSTS }}
