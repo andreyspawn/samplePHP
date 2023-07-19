@@ -1,4 +1,4 @@
-name: CI test 3
+name: CI test SSH connection
 
 env:
   PROJECT_PATH: "/var/www/samplePHP"
@@ -36,4 +36,4 @@ jobs:
           known_hosts: ${{ env.KNOWN_HOSTS }}
 
       - name: Test SSH
-        run: ssh andrey.spawn@${{ secrets.SSH_HOST }}
+        run: ssh ubuntu@${{ secrets.SSH_HOST }}
